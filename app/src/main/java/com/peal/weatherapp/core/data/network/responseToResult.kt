@@ -14,12 +14,13 @@ inline fun <reified T> responseToResult(
             if (body != null) {
                 Result.Success(body)
             } else {
-                Result.Error(NetworkError.SERIALIZATION)
+                Result.Failure(NetworkError.SERIALIZATION)
             }
         }
-        response.code() == 408 -> Result.Error(NetworkError.REQUEST_TIMEOUT)
-        response.code() == 429 -> Result.Error(NetworkError.TOO_MANY_REQUESTS)
-        response.code() in 500..599 -> Result.Error(NetworkError.SERVER_ERROR)
-        else -> Result.Error(NetworkError.UNKNOWN)
+
+        response.code() == 408 -> Result.Failure(NetworkError.REQUEST_TIMEOUT)
+        response.code() == 429 -> Result.Failure(NetworkError.TOO_MANY_REQUESTS)
+        response.code() in 500..599 -> Result.Failure(NetworkError.SERVER_ERROR)
+        else -> Result.Failure(NetworkError.UNKNOWN)
     }
 }

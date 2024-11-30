@@ -13,10 +13,10 @@ suspend inline fun <reified T> safeCall(
     val response = try {
         apiCall()
     } catch (e: IOException) {
-        return Result.Error(NetworkError.NO_INTERNET)
+        return Result.Failure(NetworkError.NO_INTERNET)
     } catch (e: Exception) {
         coroutineContext.ensureActive()
-        return Result.Error(NetworkError.UNKNOWN)
+        return Result.Failure(NetworkError.UNKNOWN)
     }
 
     return responseToResult(response)

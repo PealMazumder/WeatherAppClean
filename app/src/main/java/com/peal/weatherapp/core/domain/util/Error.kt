@@ -1,3 +1,3 @@
 package com.peal.weatherapp.core.domain.util
 
-interface Error
+sealed interface Error
