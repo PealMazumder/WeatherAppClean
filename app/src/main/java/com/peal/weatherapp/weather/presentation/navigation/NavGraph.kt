@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.peal.weatherapp.weather.presentation.home.HomeScreen
+import com.peal.weatherapp.weather.presentation.search.SearchScreen
 
 @Composable
 fun NavGraph(navController: NavHostController, modifier: Modifier) {
@@ -13,6 +14,12 @@ fun NavGraph(navController: NavHostController, modifier: Modifier) {
         composable(Route.HomeScreen.route) {
             HomeScreen(
                 modifier = modifier
+            )
+        }
+
+        composable(Route.SearchScreen.route) {
+            SearchScreen(
+                navController = navController,
             )
         }
     }
