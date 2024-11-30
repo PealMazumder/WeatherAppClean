@@ -85,4 +85,7 @@ dependencies {
     implementation(libs.squareup.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }

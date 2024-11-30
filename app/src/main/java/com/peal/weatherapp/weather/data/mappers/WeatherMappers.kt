@@ -7,10 +7,15 @@ import com.peal.weatherapp.weather.data.network.dto.WeatherDto
 fun WeatherDto.toWeatherDetails(): WeatherDetails {
     return WeatherDetails(
         temp = mainWeatherData.temperature,
-        icon = "",
+        feelsLike = mainWeatherData.feelsLikeTemperature,
+        icon = weatherConditions.firstOrNull()?.iconCode,
+        description = weatherConditions.firstOrNull()?.description,
         cityName = cityName,
         cityId = cityId,
-        countryName = "",
-        dateTime = timestamp
+        countryName = systemData.countryCode,
+        dateTime = timestamp,
+        windSpeed = windData.windSpeed,
+        pressure = mainWeatherData.atmosphericPressure,
+        humidity = mainWeatherData.humidityPercentage
     )
 }

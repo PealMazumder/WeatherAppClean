@@ -1,7 +1,6 @@
 package com.peal.weatherapp.weather.presentation.home
 
 import android.widget.Toast
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -10,6 +9,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.peal.weatherapp.core.presentation.util.ObserveAsEvents
 import com.peal.weatherapp.weather.presentation.WeatherEvent
+import com.peal.weatherapp.weather.presentation.home.components.WeatherInfo
 
 
 @Composable
@@ -31,6 +31,9 @@ fun HomeScreen(
         }
     }
 
-    Text(modifier = modifier, text = weatherState.weather?.cityName ?: "")
+    WeatherInfo(
+        modifier = modifier,
+        weatherState
+    )
 
 }

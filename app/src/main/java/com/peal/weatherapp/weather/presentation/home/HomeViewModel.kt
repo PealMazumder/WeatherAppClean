@@ -48,8 +48,8 @@ class HomeViewModel @Inject constructor(
 
             weatherDataSource
                 .getCurrentWeather(
-                    23.8041,
-                    90.4152
+                    23.7104,
+                    90.40744
                 )
                 .onSuccess { weather ->
                     _weatherState.update {
