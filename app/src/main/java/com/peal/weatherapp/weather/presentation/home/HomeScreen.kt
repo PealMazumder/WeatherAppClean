@@ -15,7 +15,8 @@ import com.peal.weatherapp.weather.presentation.home.components.WeatherInfo
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    modifier: Modifier
+    modifier: Modifier,
+    onAction: (HomeScreenAction) -> Unit,
 ) {
     val weatherState by viewModel.weatherState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -33,7 +34,8 @@ fun HomeScreen(
 
     WeatherInfo(
         modifier = modifier,
-        weatherState
+        weatherState,
+        onAction
     )
 
 }

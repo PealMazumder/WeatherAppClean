@@ -15,12 +15,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.peal.weatherapp.ui.theme.WeatherAppTheme
 import com.peal.weatherapp.weather.presentation.WeatherState
+import com.peal.weatherapp.weather.presentation.home.HomeScreenAction
 
 
 @Composable
 fun WeatherInfo(
     modifier: Modifier,
-    weatherState: WeatherState
+    weatherState: WeatherState,
+    onAction: (HomeScreenAction) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -40,7 +42,8 @@ fun WeatherInfo(
             ) {
                 WeatherHeader(
                     cityName = weatherState.weather?.cityName ?: "",
-                    date = weatherState.weather?.date ?: ""
+                    date = weatherState.weather?.date ?: "",
+                    onAction
                 )
 
                 WeatherTempContent(

@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.peal.weatherapp.core.domain.util.DomainError
 import com.peal.weatherapp.core.presentation.util.ObserveAsEvents
@@ -36,9 +36,10 @@ import com.peal.weatherapp.weather.presentation.search.components.ZilaList
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
+    onAction: (SearchScreenAction) -> Unit,
 ) {
-    val zilaState by viewModel.zilaListState.collectAsStateWithLifecycle()
+    val zilaState by viewModel.zilaListState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     val context = LocalContext.current
 
@@ -66,7 +67,9 @@ fun SearchScreen(
         TopAppBar(
             title = { Text("Search Zila") },
             navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
+                IconButton(onClick = {
+                    onAction(SearchScreenAction.OnBackAction(zilaState.selectedZila))
+                }) {
                     Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                 }
             }
@@ -86,7 +89,9 @@ fun SearchScreen(
             else -> ZilaList(
                 zila = zilaState.zila,
                 selectedZila = zilaState.selectedZila,
-                onSelectZila = { zila -> viewModel.onZilaSelected(zila) }
+                onSelectZila = { zila ->
+                    viewModel.onZilaSelected(zila)
+                }
             )
         }
     }

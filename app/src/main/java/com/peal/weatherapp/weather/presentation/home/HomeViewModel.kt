@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.peal.weatherapp.core.domain.util.onError
 import com.peal.weatherapp.core.domain.util.onSuccess
 import com.peal.weatherapp.weather.domain.WeatherDataSource
+import com.peal.weatherapp.weather.presentation.SelectedCoord
 import com.peal.weatherapp.weather.presentation.WeatherEvent
 import com.peal.weatherapp.weather.presentation.WeatherState
+import com.peal.weatherapp.weather.presentation.models.ZilaUi
 import com.peal.weatherapp.weather.presentation.models.toWeatherUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -26,10 +28,10 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
     private val _weatherState = MutableStateFlow(WeatherState())
     val weatherState = _weatherState
-        .onStart { getCurrentWeather() }
+        .onStart { getCurrentWeather(_weatherState.value.selectedCoord) }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
+            SharingStarted.WhileSubscribed(),
             WeatherState()
         )
 
@@ -37,8 +39,7 @@ class HomeViewModel @Inject constructor(
     val weatherEvents = _weatherEvents.receiveAsFlow()
 
 
-
-    private fun getCurrentWeather() {
+    private fun getCurrentWeather(selectedCoord: SelectedCoord?) {
         viewModelScope.launch {
             _weatherState.update {
                 it.copy(
@@ -46,23 +47,37 @@ class HomeViewModel @Inject constructor(
                 )
             }
 
-            weatherDataSource
-                .getCurrentWeather(
-                    23.7104,
-                    90.40744
-                )
-                .onSuccess { weather ->
-                    _weatherState.update {
-                        it.copy(
-                            isLoading = false,
-                            weather = weather.toWeatherUi()
-                        )
+            selectedCoord?.let { coord ->
+                weatherDataSource
+                    .getCurrentWeather(
+                        coord.lat,
+                        coord.lon,
+                    )
+                    .onSuccess { weather ->
+                        _weatherState.update {
+                            it.copy(
+                                isLoading = false,
+                                weather = weather.toWeatherUi()
+                            )
+                        }
                     }
-                }
-                .onError { error ->
-                    _weatherState.update { it.copy(isLoading = false) }
-                    _weatherEvents.send(WeatherEvent.Error(error))
-                }
+                    .onError { error ->
+                        _weatherState.update { it.copy(isLoading = false) }
+                        _weatherEvents.send(WeatherEvent.Error(error))
+                    }
+            }
+        }
+    }
+
+
+    fun onZilaSelected(zila: ZilaUi) {
+        if (_weatherState.value.selectedCoord?.lat != zila.latitude && _weatherState.value.selectedCoord?.lon != zila.longitude) {
+            _weatherState.value = _weatherState.value.copy(
+                selectedCoord = SelectedCoord(
+                    lat = zila.latitude,
+                    lon = zila.longitude
+                )
+            )
         }
     }
 }
