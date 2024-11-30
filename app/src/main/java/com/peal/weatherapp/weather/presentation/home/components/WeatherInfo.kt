@@ -4,69 +4,50 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.peal.weatherapp.ui.theme.WeatherAppTheme
 import com.peal.weatherapp.weather.presentation.WeatherState
+import com.peal.weatherapp.weather.presentation.common.LoadingState
 import com.peal.weatherapp.weather.presentation.home.HomeScreenAction
+import com.peal.weatherapp.weather.presentation.models.WeatherUi
 
 
 @Composable
 fun WeatherInfo(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     weatherState: WeatherState,
-    onAction: (HomeScreenAction) -> Unit,
+    onAction: (HomeScreenAction) -> Unit
+) {
+    when {
+        weatherState.isLoading -> LoadingState(modifier)
+        weatherState.weather == null -> ErrorState(modifier, onAction)
+        else -> WeatherContent(
+            modifier = modifier,
+            weather = weatherState.weather,
+            onAction = onAction
+        )
+    }
+}
+
+@Composable
+private fun WeatherContent(
+    modifier: Modifier = Modifier,
+    weather: WeatherUi,
+    onAction: (HomeScreenAction) -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
+            .wrapContentHeight()
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            shape = MaterialTheme.shapes.medium
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                WeatherHeader(
-                    cityName = weatherState.weather?.cityName ?: "",
-                    date = weatherState.weather?.date ?: "",
-                    onAction
-                )
-
-                WeatherTempContent(
-                    iconUrl = weatherState.weather?.icon,
-                    temperature = weatherState.weather?.temp ?: "",
-                    feelsLike = weatherState.weather?.feelsLike
-                )
-
-                Text(
-                    text = weatherState.weather?.description ?: "",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .wrapContentWidth()
-                )
-            }
-        }
-
+        WeatherMainCard(weather, onAction)
         WeatherDetailsCard(
-            humidity = weatherState.weather?.humidity,
-            windSpeed = weatherState.weather?.windSpeed,
-            pressure = weatherState.weather?.pressure,
+            humidity = weather.humidity,
+            windSpeed = weather.windSpeed,
+            pressure = weather.pressure,
             modifier = Modifier.padding(top = 16.dp)
         )
     }

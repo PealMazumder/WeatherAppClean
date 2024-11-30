@@ -14,13 +14,12 @@ import com.peal.weatherapp.weather.presentation.search.SearchScreen
 import com.peal.weatherapp.weather.presentation.search.SearchScreenAction
 
 @Composable
-fun NavGraph(navController: NavHostController, modifier: Modifier) {
-    val homeScreenViewModel: HomeViewModel = hiltViewModel()
+fun NavGraph(navController: NavHostController, modifier: Modifier,  homeViewModel: HomeViewModel = hiltViewModel()) {
     NavHost(navController = navController, startDestination = Route.HomeScreen.route) {
         composable(Route.HomeScreen.route) {
             HomeScreen(
                 modifier = modifier,
-                viewModel = homeScreenViewModel,
+                viewModel = homeViewModel,
                 onAction = { action ->
                     when (action) {
                         is HomeScreenAction.OnZilaSearchClick -> navigateToSearch(
@@ -35,7 +34,7 @@ fun NavGraph(navController: NavHostController, modifier: Modifier) {
             SearchScreen(navController = navController, onAction = { action ->
                 when (action) {
                     is SearchScreenAction.OnBackAction -> {
-                        action.zila?.let { zilaUi -> homeScreenViewModel.onZilaSelected(zila = zilaUi) }
+                        action.zila?.let { zilaUi -> homeViewModel.onZilaSelected(zila = zilaUi) }
                         navController.popBackStack()
                     }
                 }

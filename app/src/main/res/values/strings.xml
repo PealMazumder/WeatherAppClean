@@ -4,4 +4,11 @@
     <string name="wind_speed">Wind Speed</string>
     <string name="pressure">Pressure</string>
     <string name="search">Search</string>
+    <string name="unable_to_fetch_weather_information">Unable to fetch current location weather information</string>
+    <string name="browse_zila">Browse Zila</string>
+    <string name="location_permission_is_required_please_grant_permission_in_app_settings">Location permission is required. Please grant permission in app settings.</string>
+    <string name="please_enable_gps_to_get_your_current_location">Please enable GPS to get your current location.</string>
+    <string name="unable_to_determine_your_current_location_please_try_again">Unable to determine your current location. Please try again.</string>
+    <string name="location_fetch_failed_check_your_network_and_try_again">Location fetch failed. Check your network and try again.</string>
+    <string name="an_unexpected_location_error_occurred">An unexpected location error occurred.</string>
 </resources>
