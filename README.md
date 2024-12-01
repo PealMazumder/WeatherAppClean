@@ -2,7 +2,7 @@
 
 ## Setup
 
-1. btain your API key by registering at [OpenWeatherMap](https://openweathermap.org/).
+1. Obtain your API key by registering at [OpenWeatherMap](https://openweathermap.org/).
 2. Add your API key to `local.properties`:
    ```properties
    API_KEY=your_api_key_here
