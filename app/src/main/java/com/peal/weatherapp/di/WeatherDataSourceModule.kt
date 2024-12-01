@@ -1,7 +1,7 @@
 package com.peal.weatherapp.di
 
 import com.peal.weatherapp.weather.data.network.RemoteWeatherDataSource
-import com.peal.weatherapp.weather.domain.WeatherDataSource
+import com.peal.weatherapp.weather.domain.repository.WeatherDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

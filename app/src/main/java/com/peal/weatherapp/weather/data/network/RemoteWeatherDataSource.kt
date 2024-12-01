@@ -7,7 +7,7 @@ import com.peal.weatherapp.core.domain.util.Result
 import com.peal.weatherapp.core.domain.util.map
 import com.peal.weatherapp.weather.data.mappers.toWeatherDetails
 import com.peal.weatherapp.weather.data.network.dto.WeatherDto
-import com.peal.weatherapp.weather.domain.WeatherDataSource
+import com.peal.weatherapp.weather.domain.repository.WeatherDataSource
 import com.peal.weatherapp.weather.domain.models.WeatherDetails
 import javax.inject.Inject
 

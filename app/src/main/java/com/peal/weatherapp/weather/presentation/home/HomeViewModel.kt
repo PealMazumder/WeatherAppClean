@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.peal.weatherapp.core.domain.util.onError
 import com.peal.weatherapp.core.domain.util.onSuccess
-import com.peal.weatherapp.weather.domain.WeatherDataSource
 import com.peal.weatherapp.weather.domain.location.LocationTracker
+import com.peal.weatherapp.weather.domain.usecase.GetCurrentWeatherUseCase
 import com.peal.weatherapp.weather.presentation.SelectedCoord
 import com.peal.weatherapp.weather.presentation.WeatherEvent
 import com.peal.weatherapp.weather.presentation.WeatherState
@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val weatherDataSource: WeatherDataSource,
+    private val getCurrentWeatherUseCase: GetCurrentWeatherUseCase,
     private val locationTracker: LocationTracker
 ) : ViewModel() {
     private val _weatherState = MutableStateFlow(WeatherState())
@@ -44,11 +44,10 @@ class HomeViewModel @Inject constructor(
             }
 
             selectedCoord?.let { coord ->
-                weatherDataSource
-                    .getCurrentWeather(
-                        coord.lat,
-                        coord.lon,
-                    )
+                getCurrentWeatherUseCase.invoke(
+                    coord.lat,
+                    coord.lon,
+                )
                     .onSuccess { weather ->
                         _weatherState.update {
                             it.copy(

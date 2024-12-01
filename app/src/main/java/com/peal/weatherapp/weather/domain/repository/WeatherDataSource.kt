@@ -1,4 +1,4 @@
-package com.peal.weatherapp.weather.domain
+package com.peal.weatherapp.weather.domain.repository
 
 import com.peal.weatherapp.core.domain.util.NetworkError
 import com.peal.weatherapp.core.domain.util.Result
