@@ -26,12 +26,12 @@ fun ClickableBrowseRow(
     onAction: (HomeScreenAction) -> Unit
 ) {
     Row(
-    modifier = Modifier.clickable(
-    onClick = {
-        onAction(HomeScreenAction.OnZilaSearchClick)
-    }
-    ),
-    verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.clickable(
+            onClick = {
+                onAction(HomeScreenAction.OnZilaSearchClick)
+            }
+        ),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = text,
