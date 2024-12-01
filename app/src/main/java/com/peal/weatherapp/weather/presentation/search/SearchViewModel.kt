@@ -4,16 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.peal.weatherapp.core.domain.util.onError
 import com.peal.weatherapp.core.domain.util.onSuccess
+import com.peal.weatherapp.weather.domain.usecase.GetSuggestionsUseCase
+import com.peal.weatherapp.weather.domain.usecase.SaveQueryUseCase
 import com.peal.weatherapp.weather.domain.usecase.ZilaListUseCase
 import com.peal.weatherapp.weather.presentation.models.ZilaUi
 import com.peal.weatherapp.weather.presentation.models.toZilaUi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,51 +23,87 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val zilaListUseCase: ZilaListUseCase
+    private val zilaListUseCase: ZilaListUseCase,
+    private val getSuggestionsUseCase: GetSuggestionsUseCase,
+    private val saveQueryUseCase: SaveQueryUseCase,
 ) : ViewModel() {
 
-    private val _zilaListState = MutableStateFlow(ZilaState())
-    val zilaListState = _zilaListState
-        .onStart { getZila() }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            ZilaState()
-        )
+    private val _searchState = MutableStateFlow(SearchState())
+    val searchState: StateFlow<SearchState> = _searchState
+
+    private val _searchEvents = Channel<SearchEvent>(Channel.BUFFERED)
+    val searchEvents = _searchEvents.receiveAsFlow()
 
     private var originalZilaList: List<ZilaUi> = emptyList()
+    private var searchJob: Job? = null
 
-    private val _zilaEvents = Channel<ZilaEvent>()
-    val zilaEvents = _zilaEvents.receiveAsFlow()
+    init {
+        fetchZilaList()
+    }
 
-    private fun getZila() {
+    private fun fetchZilaList() {
         viewModelScope.launch {
-            _zilaListState.update {
-                it.copy(
-                    isLoading = true
-                )
-            }
-
-            zilaListUseCase
-                .getZilaList()
-                .onSuccess { zilaList ->
-                    val uiList = zilaList.map { it.toZilaUi() }
-                    _zilaListState.update {
-                        it.copy(
-                            isLoading = false,
-                            zila = uiList
-                        )
+            _searchState.update { it.copy(isLoading = true) }
+            try {
+                zilaListUseCase.getZilaList()
+                    .onSuccess { zilaList ->
+                        val uiList = zilaList.map { it.toZilaUi() }
+                        originalZilaList = uiList
+                        _searchState.update {
+                            it.copy(
+                                isLoading = false,
+                                zila = uiList
+                            )
+                        }
                     }
-                    originalZilaList = uiList
-                }
-                .onError { error ->
-                    _zilaListState.update { it.copy(isLoading = false) }
-                    _zilaEvents.send(ZilaEvent.Error(error))
-                }
+                    .onError { error ->
+                        _searchState.update { it.copy(isLoading = false) }
+                        _searchEvents.send(SearchEvent.Error(error))
+                    }
+            } catch (e: Exception) {
+                _searchState.update { it.copy(isLoading = false) }
+            }
         }
     }
 
-    fun searchZila(query: String) {
+    fun onIntent(intent: SearchIntent) {
+        when (intent) {
+            is SearchIntent.QueryChanged -> {
+                _searchState.update { it.copy(searchQuery = intent.query) }
+                searchJob?.cancel()
+                searchJob = viewModelScope.launch {
+                    delay(300)
+                    updateSuggestions(intent.query)
+                    filterZilaList(intent.query)
+                }
+            }
+
+            is SearchIntent.SuggestionSelected -> {
+                _searchState.update { it.copy(searchQuery = intent.suggestion) }
+                viewModelScope.launch {
+                    filterZilaList(intent.suggestion)
+                }
+            }
+        }
+    }
+
+    private suspend fun updateSuggestions(query: String) {
+        try {
+            _searchState.update {
+                it.copy(
+                    suggestions = if (query.isNotEmpty()) {
+                        getSuggestionsUseCase.invoke(query)
+                    } else {
+                        emptyList()
+                    }
+                )
+            }
+        } catch (e: Exception) {
+            e.stackTraceToString()
+        }
+    }
+
+    private suspend fun filterZilaList(query: String) {
         val filteredList = if (query.isEmpty()) {
             originalZilaList
         } else {
@@ -75,16 +113,23 @@ class SearchViewModel @Inject constructor(
             }
         }
 
-        _zilaListState.update {
-            it.copy(
-                zila = filteredList
-            )
+        _searchState.update { it.copy(zila = filteredList) }
+
+        if (query.isNotEmpty()) {
+            try {
+                saveQueryUseCase.invoke(query)
+            } catch (e: Exception) {
+                e.stackTraceToString()
+            }
         }
     }
 
-
     fun onZilaSelected(zila: ZilaUi) {
-        _zilaListState.value = _zilaListState.value.copy(selectedZila = zila)
+        _searchState.update { it.copy(selectedZila = zila) }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        searchJob?.cancel()
+    }
 }

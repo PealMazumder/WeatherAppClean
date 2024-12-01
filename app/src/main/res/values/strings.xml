@@ -11,4 +11,13 @@
     <string name="unable_to_determine_your_current_location_please_try_again">Unable to determine your current location. Please try again.</string>
     <string name="location_fetch_failed_check_your_network_and_try_again">Location fetch failed. Check your network and try again.</string>
     <string name="an_unexpected_location_error_occurred">An unexpected location error occurred.</string>
+    <string name="no_zilas_found">No Zilas found</string>
+    <string name="data_file_is_missing">Data file is missing</string>
+    <string name="error_parsing_data">Error parsing data</string>
+    <string name="an_unexpected_error_occurred">An unexpected error occurred</string>
+    <string name="search_zila">Search Zila</string>
+    <string name="back">Back</string>
+    <string name="no_data_available">No data available</string>
+    <string name="file_could_not_be_found">File could not be found</string>
+    <string name="an_unknown_error_occurred">An unknown error occurred</string>
 </resources>

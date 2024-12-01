@@ -31,7 +31,8 @@ fun NavGraph(navController: NavHostController, modifier: Modifier,  homeViewMode
         }
 
         composable(Route.SearchScreen.route) {
-            SearchScreen(navController = navController, onAction = { action ->
+            SearchScreen(
+                onAction = { action ->
                 when (action) {
                     is SearchScreenAction.OnBackAction -> {
                         action.zila?.let { zilaUi -> homeViewModel.onZilaSelected(zila = zilaUi) }

@@ -19,11 +19,13 @@ import androidx.compose.ui.unit.dp
 fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
-    placeholder: String
+    placeholder: String,
 ) {
     TextField(
         value = query,
-        onValueChange = onQueryChange,
+        onValueChange = {
+            onQueryChange(it)
+        },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
