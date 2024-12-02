@@ -41,10 +41,10 @@ import com.peal.weatherapp.weather.presentation.search.components.ZilaList
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
+    searchState: SearchState,
     viewModel: SearchViewModel = hiltViewModel(),
     onAction: (SearchScreenAction) -> Unit,
 ) {
-    val searchState by viewModel.searchState.collectAsState()
     var showSuggestions by remember { mutableStateOf(true) }
     val context = LocalContext.current
 

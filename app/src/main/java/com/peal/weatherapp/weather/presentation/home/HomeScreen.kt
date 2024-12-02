@@ -2,25 +2,24 @@ package com.peal.weatherapp.weather.presentation.home
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.peal.weatherapp.R
 import com.peal.weatherapp.core.presentation.util.ObserveAsEvents
 import com.peal.weatherapp.weather.domain.util.LocationError
 import com.peal.weatherapp.weather.presentation.WeatherEvent
+import com.peal.weatherapp.weather.presentation.WeatherState
 import com.peal.weatherapp.weather.presentation.home.components.WeatherInfo
 
 
 @Composable
 fun HomeScreen(
+    weatherState: WeatherState,
     viewModel: HomeViewModel = hiltViewModel(),
     modifier: Modifier,
     onAction: (HomeScreenAction) -> Unit,
 ) {
-    val weatherState by viewModel.weatherState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     ObserveAsEvents(events = viewModel.weatherEvents) { event ->
         when (event) {
